@@ -14,10 +14,11 @@ namespace ShoesSopAPI.Controllers
     public class AuthenticationController : ControllerBase
     {
         private readonly DBShop _context;
-
-        public AuthenticationController(DBShop context)
+        private readonly IConfiguration _config;
+        public AuthenticationController(DBShop context, IConfiguration config)
         {
             _context = context;
+            _config = config;
         }
         [Route("login")]
         [HttpPost]
@@ -49,17 +50,15 @@ namespace ShoesSopAPI.Controllers
         private string GenerateJWT(KhachHang account)
         {
             //  var issuer = _config["Jwt:Issuer"];
-            var issuer = "https://fdgfdgfdsgdfgdfg.com/";
-            var audience = "https://hgfnfgbseffdvf.com/";
+            var issuer = _config["Jwt:Issuer"];
+            var audience = _config["Jwt:Auduence"];
             var key = Encoding.ASCII.GetBytes
-            ("This is a sample secret key - please don't use in production environment.'");
+            (_config["Jwt:Key"]);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[]
                 {
                 new Claim("Id", Guid.NewGuid().ToString()),
-               /* new Claim(JwtRegisteredClaimNames.Name, account.HoTen),
-                new Claim(JwtRegisteredClaimNames.Email, account.Email),*/
                 new Claim(JwtRegisteredClaimNames.Jti,
                 Guid.NewGuid().ToString())
              }),
@@ -70,7 +69,7 @@ namespace ShoesSopAPI.Controllers
                 (new SymmetricSecurityKey(key),
                 SecurityAlgorithms.HmacSha512Signature)
             };
-            var tokenHandler = new JwtSecurityTokenHandler() ;
+            var tokenHandler = new JwtSecurityTokenHandler();
             var token = tokenHandler.CreateToken(tokenDescriptor);
             var jwtToken = tokenHandler.WriteToken(token);
             var stringToken = tokenHandler.WriteToken(token);
