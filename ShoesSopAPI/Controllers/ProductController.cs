@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using ShoesSopAPI.Data;
 using ShoesSopAPI.Models;
+using ShoesSopAPI.Services.Interfaces;
 
 namespace ShoesSopAPI.Controllers
 {
@@ -10,25 +9,24 @@ namespace ShoesSopAPI.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
-        private readonly DBShop _context;
-
-        public ProductController(DBShop context)
+        private readonly IProductService _productService;
+        public ProductController(IProductService productService)
         {
-            _context = context;
+            _productService = productService;
         }
 
         // GET: api/Product
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<SanPham>>> GetSanPhams()
+        public async Task<IEnumerable<SanPham>> GetSanPham()
         {
-            return await _context.SanPhams.OrderByDescending(n => n.Sale).ToListAsync();
+            return await _productService.GetListProductBySale();
         }
 
         // GET: api/Product/5
         [HttpGet("{id}")]
         public async Task<ActionResult<SanPham>> GetSanPham(int id)
         {
-            var sanPham = await _context.SanPhams.FindAsync(id);
+            var sanPham = await _productService.GetProductById(id);
 
             if (sanPham == null)
             {
@@ -40,83 +38,71 @@ namespace ShoesSopAPI.Controllers
         // danh sach san pham theo loai
         [Route("loai")]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<SanPham>>> GetLoaiSanPhams(int id)
+        public async Task<IEnumerable<SanPham>> GetLoaiSanPhams(int id)
         {
-            var list = await _context.SanPhams.Where(n => n.Loai == id).ToListAsync();
+            var list = await _productService.GetListProductByType(id);
             return list;
         }
         // danh sach san pham moi 
         [Route("new")]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<SanPham>>> GetListSanPhamMoi()
+        public async Task<IEnumerable<SanPham>> GetListSanPhamMoi()
         {
-            var list = await _context.SanPhams.OrderByDescending(n => n.NgayTao).ToListAsync();
+            var list = await _productService.GetListProductByNgayTao();
             return list;
         }
-        // PUT: api/Product/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+
         [Authorize]
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutSanPham(int id, SanPham sanPham)
-        {
-            if (id != sanPham.Id)
-            {
-                return BadRequest();
-            }
+        /* public async Task<IActionResult> PutSanPham(int id, SanPham sanPham)
+         {
+             if (id != sanPham.Id)
+             {
+                 return BadRequest();
+             }
 
-            _context.Entry(sanPham).State = EntityState.Modified;
+             _context.Entry(sanPham).State = EntityState.Modified;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!SanPhamExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+             try
+             {
+                 await _context.SaveChangesAsync();
+             }
+             catch (DbUpdateConcurrencyException)
+             {
+                 if (!SanPhamExists(id))
+                 {
+                     return NotFound();
+                 }
+                 else
+                 {
+                     throw;
+                 }
+             }
 
-            return NoContent();
-        }
-
+             return NoContent();
+         }
+ */
         // POST: api/Product
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [Authorize]
         [HttpPost]
         public async Task<ActionResult<SanPham>> PostSanPham(SanPham sanPham)
         {
-            _context.SanPhams.Add(sanPham);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetSanPham", new { id = sanPham.Id }, sanPham);
+            var product = _productService.PostProduct(sanPham);
+            return CreatedAtAction("GetSanPham", new { id = product.Id }, product);
         }
 
         // DELETE: api/Product/5
-        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSanPham(int id)
         {
-            var sanPham = await _context.SanPhams.FindAsync(id);
+            Boolean sanPham =  _productService.DeleteProduct(id);
             if (sanPham == null)
             {
                 return NotFound();
             }
 
-            _context.SanPhams.Remove(sanPham);
-            await _context.SaveChangesAsync();
-
             return NoContent();
         }
 
-        private bool SanPhamExists(int id)
-        {
-            return _context.SanPhams.Any(e => e.Id == id);
-        }
     }
 }

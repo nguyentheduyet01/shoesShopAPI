@@ -26,6 +26,11 @@ namespace ShoesSopAPI.Data
         public virtual DbSet<NhanVien> NhanViens { get; set; }
         public virtual DbSet<SanPham> SanPhams { get; set; }
 
+        public void GetSanPham(int id)
+        {
+            throw new NotImplementedException();
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<GioHang>(entity =>
