@@ -9,6 +9,7 @@ using ShoesSopAPI.Services.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Web.Providers.Entities;
 
 namespace ShoesSopAPI.Services
 {
@@ -17,6 +18,11 @@ namespace ShoesSopAPI.Services
 
         private readonly IConfiguration _config;
         private readonly IAuthenticationRepository _repository;
+
+        public AuthenticationService()
+        {
+        }
+
         public AuthenticationService( IConfiguration config, IAuthenticationRepository repository)
         {
             _config = config;
@@ -47,9 +53,8 @@ namespace ShoesSopAPI.Services
         }
         private string GenerateJWT(KhachHang account)
         {
-            //  var issuer = _config["Jwt:Issuer"];
             var issuer = _config["Jwt:Issuer"];
-            var audience = _config["Jwt:Auduence"];
+            var audience = _config["Jwt:Audience"];
             var key = Encoding.ASCII.GetBytes
             (_config["Jwt:Key"]);
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -57,10 +62,11 @@ namespace ShoesSopAPI.Services
                 Subject = new ClaimsIdentity(new[]
                 {
                 new Claim("Id", Guid.NewGuid().ToString()),
+               
                 new Claim(JwtRegisteredClaimNames.Jti,
                 Guid.NewGuid().ToString())
              }),
-                Expires = DateTime.UtcNow.AddDays(2),
+                Expires = DateTime.UtcNow.AddDays(5),
                 Issuer = issuer,
                 Audience = audience,
                 SigningCredentials = new SigningCredentials
@@ -69,6 +75,7 @@ namespace ShoesSopAPI.Services
             };
             var tokenHandler = new JwtSecurityTokenHandler();
             var token = tokenHandler.CreateToken(tokenDescriptor);
+            var jwtToken = tokenHandler.WriteToken(token);
             var stringToken = tokenHandler.WriteToken(token);
             return stringToken;
         }

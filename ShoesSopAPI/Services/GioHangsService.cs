@@ -27,9 +27,9 @@ namespace ShoesSopAPI.Services
             return await _gioHangRepo.GetListAllGioHang();
         }
 
-        public async Task<GioHang> PostProductToGioHang(int khachHangId, int sanPhamId)
+        public async Task<GioHang> PostProductToGioHang(int sanPhamId, int khachHangId)
         {
-           return await _gioHangRepo.PostProductToGioHang(khachHangId, sanPhamId);
+           return await _gioHangRepo.PostProductToGioHang(sanPhamId, khachHangId);
         }
 
         public async Task<GioHang> DeleteGioHang(int id)

@@ -31,6 +31,16 @@ namespace ShoesSopAPI.Data
             throw new NotImplementedException();
         }
 
+        public void Setup(Func<object, object> value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object Setup(Task<KhachHang> task)
+        {
+            throw new NotImplementedException();
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<GioHang>(entity =>

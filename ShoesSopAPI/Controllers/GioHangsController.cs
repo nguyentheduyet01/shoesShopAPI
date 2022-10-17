@@ -70,11 +70,11 @@ namespace ShoesSopAPI.Controllers
 
         // POST: api/GioHangs
         [HttpPost]
-        public async Task<ActionResult> PostGioHang(int id, int sanPhamId)
+        public async Task<ActionResult> PostGioHang(int sanPhamId, int khachHangId)
         {
-           var result = await _gioHangsService.PostProductToGioHang(id, sanPhamId);
+           var result = await _gioHangsService.PostProductToGioHang(sanPhamId, khachHangId);
             if (result != null)
-                return Ok();
+                return NoContent();
             return NotFound();
         }
 

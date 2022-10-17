@@ -38,10 +38,10 @@ namespace ShoesSopAPI.Repository
             return await products.ToListAsync();
         }
 
-        public async Task<GioHang> PostProductToGioHang(int id, int sanPhamId)
+        public async Task<GioHang> PostProductToGioHang(int sanPhamId, int khachHangId)
         {
             GioHang gioHang = new GioHang();
-            gioHang.KhachHangId = id;
+            gioHang.KhachHangId = khachHangId;
             gioHang.SanPhamId = sanPhamId;
             _dBShop.GioHangs.Add(gioHang);
             await _dBShop.SaveChangesAsync();

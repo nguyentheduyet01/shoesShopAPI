@@ -50,6 +50,7 @@ builder.Services.AddAuthentication(options =>
 
     };
 });
+builder.Services.AddAuthorization();
 
 builder.Services.AddDbContext<ShoesSopAPI.Data.DBShop>(
     options =>

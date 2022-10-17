@@ -9,7 +9,7 @@ namespace ShoesSopAPI.Controllers
     public class AuthenticationController : ControllerBase
     {
         private readonly IAuthenticationService _authenticationService;
-        public AuthenticationController(DBShop context, IConfiguration config, IAuthenticationService authenticationService)
+        public AuthenticationController(IAuthenticationService authenticationService)
         {
             _authenticationService = authenticationService;
         }
@@ -24,7 +24,7 @@ namespace ShoesSopAPI.Controllers
             {
                 return NotFound();
             }
-            return account;
+            return Ok(account);
         }
         
     }

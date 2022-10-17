@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using ShoesSopAPI.Data;
 using ShoesSopAPI.Models;
 using ShoesSopAPI.Repository.Interface;
@@ -32,7 +33,6 @@ namespace ShoesSopAPI.Repository
            return await _dBShop.SanPhams.OrderByDescending(n => n.NgayTao).ToListAsync();
            
         }
-
         public async Task<IEnumerable<SanPham>> GetListProductBySale()
         {
             return await _dBShop.SanPhams.OrderByDescending(n => n.Sale).ToListAsync();

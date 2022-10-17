@@ -9,6 +9,10 @@ namespace ShoesSopAPI.Repository
     {
         private readonly DBShop _dBShop;
 
+        public AuthenticationRepository()
+        {
+        }
+
         public AuthenticationRepository(DBShop dBShop)
         {
             _dBShop = dBShop;

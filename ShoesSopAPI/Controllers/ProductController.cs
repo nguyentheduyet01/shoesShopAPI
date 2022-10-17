@@ -15,6 +15,7 @@ namespace ShoesSopAPI.Controllers
             _productService = productService;
         }
 
+
         // GET: api/Product
         [HttpGet]
         public async Task<IEnumerable<SanPham>> GetSanPham()
@@ -88,7 +89,8 @@ namespace ShoesSopAPI.Controllers
         public async Task<ActionResult<SanPham>> PostSanPham(SanPham sanPham)
         {
             var product = _productService.PostProduct(sanPham);
-            return CreatedAtAction("GetSanPham", new { id = product.Id }, product);
+            return Ok(product);
+          //  return product;
         }
 
         // DELETE: api/Product/5
