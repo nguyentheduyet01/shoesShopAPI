@@ -1,15 +1,10 @@
-﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using ShoesSopAPI.Data;
+﻿using Microsoft.IdentityModel.Tokens;
 using ShoesSopAPI.Models;
-using ShoesSopAPI.Repository;
 using ShoesSopAPI.Repository.Interface;
 using ShoesSopAPI.Services.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using System.Web.Providers.Entities;
 
 namespace ShoesSopAPI.Services
 {
@@ -23,7 +18,7 @@ namespace ShoesSopAPI.Services
         {
         }
 
-        public AuthenticationService( IConfiguration config, IAuthenticationRepository repository)
+        public AuthenticationService(IConfiguration config, IAuthenticationRepository repository)
         {
             _config = config;
             _repository = repository;
@@ -31,25 +26,18 @@ namespace ShoesSopAPI.Services
         public async Task<Account> Login(string username, string password)
         {
             var account = await _repository.FindBySDTAsync(username);
-            if (account == null)
+            if (account?.MatKhau == password)
             {
-                return null;
+                Account acc = new Account();
+                var tokenStr = GenerateJWT(account);
+                acc.Id = account.Id;
+                acc.Name = account.HoTen;
+                acc.Username = account.Sđt;
+                acc.Password = account.MatKhau;
+                acc.Token = tokenStr;
+                return acc;
             }
-            else
-            {
-                if (account.MatKhau == password)
-                {
-                    Account acc = new Account();
-                    var tokenStr = GenerateJWT(account);
-                    acc.Id = account.Id;
-                    acc.Name = account.HoTen;
-                    acc.Username = account.Sđt;
-                    acc.Password = account.MatKhau;
-                    acc.Token = tokenStr;
-                    return acc;
-                }
-                return null;
-            }
+            return null;
         }
         private string GenerateJWT(KhachHang account)
         {
@@ -62,7 +50,7 @@ namespace ShoesSopAPI.Services
                 Subject = new ClaimsIdentity(new[]
                 {
                 new Claim("Id", Guid.NewGuid().ToString()),
-               
+
                 new Claim(JwtRegisteredClaimNames.Jti,
                 Guid.NewGuid().ToString())
              }),

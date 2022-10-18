@@ -33,7 +33,7 @@ namespace ShoesSopAPI.Services
 
         public async Task<IEnumerable<SanPham>> GetListProductByType(int type)
         {
-            var list = await _dBShop.SanPhams.Where(n => n.Loai == type).ToListAsync();
+            var list = await _productRepo.GetListProductByType(type);
             return list;
         }
 
@@ -45,6 +45,11 @@ namespace ShoesSopAPI.Services
         public async Task<SanPham> PostProduct(SanPham product)
         {
            return await _productRepo.PostProduct(product);
+        }
+
+        public Task<bool> PutProduct(int id, SanPham product)
+        {
+            return _productRepo.PutProduct(id, product);
         }
     }
 }

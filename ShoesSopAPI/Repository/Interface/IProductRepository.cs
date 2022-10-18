@@ -9,6 +9,7 @@ namespace ShoesSopAPI.Repository.Interface
         Task<IEnumerable<SanPham>> GetListProductByType(int type);
         Task<IEnumerable<SanPham>> GetListProductBySale();
         Task<SanPham> PostProduct(SanPham product);
+        Task<bool> PutProduct(int id, SanPham product);
         Boolean DeleteProduct(int id);
     }
 }

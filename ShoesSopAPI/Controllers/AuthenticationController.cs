@@ -18,11 +18,10 @@ namespace ShoesSopAPI.Controllers
         public async Task<ActionResult<Account>> Login(string username, string password)
         {
             var account = await _authenticationService.Login(username, password);
-            IActionResult response = Unauthorized();
 
             if (account == null)
             {
-                return NotFound();
+                return BadRequest("Isvalid username or password");
             }
             return Ok(account);
         }

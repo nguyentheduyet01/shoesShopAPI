@@ -8,7 +8,5 @@ namespace ShoesSopAPI.DTO
         public int SanPhamId { get; set; }
         public int KhachHangId { get; set; }
 
-        public  KhachHang KhachHang { get; set; }
-        public  SanPham SanPham { get; set; }
     }
 }

@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using ShoesSopAPI.Data;
 using ShoesSopAPI.Models;
 using ShoesSopAPI.Repository.Interface;
+using System.Data.Entity;
+using EntityState = Microsoft.EntityFrameworkCore.EntityState;
 
 namespace ShoesSopAPI.Repository
 {
@@ -53,6 +55,21 @@ namespace ShoesSopAPI.Repository
             _dBShop.SanPhams.Add(product);
             await _dBShop.SaveChangesAsync();
             return product;
+        }
+
+        public async Task<bool> PutProduct(int id, SanPham product)
+        {
+            _dBShop.Entry(product).State = EntityState.Modified;
+
+            try
+            {
+                await _dBShop.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                    return false;
+            }
+            return true;
         }
     }
 }

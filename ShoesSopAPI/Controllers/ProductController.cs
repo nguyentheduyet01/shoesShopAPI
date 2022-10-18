@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ShoesSopAPI.DTO;
 using ShoesSopAPI.Models;
 using ShoesSopAPI.Services.Interfaces;
 
@@ -18,14 +19,34 @@ namespace ShoesSopAPI.Controllers
 
         // GET: api/Product
         [HttpGet]
-        public async Task<IEnumerable<SanPham>> GetSanPham()
+        public async Task<ActionResult<IEnumerable<SanPhamDto>>> GetSanPham()
         {
-            return await _productService.GetListProductBySale();
+            var listProduct =  await _productService.GetListProductBySale();
+            if(listProduct == null)
+            {
+                return BadRequest();
+            }
+            else
+            {
+                var listProductDto = listProduct.Select(n => new SanPhamDto
+                {
+                    Id = n.Id,
+                    TenSanPham = n.TenSanPham,
+                    MoTa = n.MoTa,
+                    Anh = n.Anh,
+                    CreatedbyId = n.CreatedbyId,
+                    Gia = n.Gia,
+                    Sale = n.Sale,
+                    Loai = n.Loai,
+                    NgayTao = n.NgayTao
+                });
+                return Ok(listProductDto);
+            }
         }
 
         // GET: api/Product/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<SanPham>> GetSanPham(int id)
+        public async Task<ActionResult<SanPhamDto>> GetSanPham(int id)
         {
             var sanPham = await _productService.GetProductById(id);
 
@@ -34,75 +55,118 @@ namespace ShoesSopAPI.Controllers
                 return NotFound();
             }
 
-            return sanPham;
+            return new SanPhamDto
+            {
+                Id = sanPham.Id,
+                TenSanPham = sanPham.TenSanPham,
+                MoTa = sanPham.MoTa,
+                Anh = sanPham.Anh,
+                CreatedbyId = sanPham.CreatedbyId,
+                Gia = sanPham.Gia,
+                Sale = sanPham.Sale,
+                Loai = sanPham.Loai,
+                NgayTao = sanPham.NgayTao
+            };
         }
         // danh sach san pham theo loai
         [Route("loai")]
         [HttpGet]
-        public async Task<IEnumerable<SanPham>> GetLoaiSanPhams(int id)
+        public async Task<ActionResult<IEnumerable<SanPhamDto>>> GetLoaiSanPhams(int id)
         {
             var list = await _productService.GetListProductByType(id);
-            return list;
+            if(list == null)
+            {
+                return NotFound();
+            }
+            var listProductDto = list.Select(n => new SanPhamDto
+            {
+                Id = n.Id,
+                TenSanPham = n.TenSanPham,
+                MoTa = n.MoTa,
+                Anh = n.Anh,
+                CreatedbyId = n.CreatedbyId,
+                Gia = n.Gia,
+                Sale = n.Sale,
+                Loai = n.Loai,
+                NgayTao = n.NgayTao
+            });
+            return Ok(listProductDto);
         }
         // danh sach san pham moi 
         [Route("new")]
         [HttpGet]
-        public async Task<IEnumerable<SanPham>> GetListSanPhamMoi()
+        public async Task<ActionResult<IEnumerable<SanPham>>> GetListSanPhamMoi()
         {
             var list = await _productService.GetListProductByNgayTao();
-            return list;
+            if(list == null)
+            {
+                return NotFound();
+            }
+            var listProductDto = list.Select(n => new SanPhamDto
+            {
+                Id = n.Id,
+                TenSanPham = n.TenSanPham,
+                MoTa = n.MoTa,
+                Anh = n.Anh,
+                CreatedbyId = n.CreatedbyId,
+                Gia = n.Gia,
+                Sale = n.Sale,
+                Loai = n.Loai,
+                NgayTao = n.NgayTao
+            });
+            return Ok(listProductDto);
         }
 
         [Authorize]
         [HttpPut("{id}")]
-        /* public async Task<IActionResult> PutSanPham(int id, SanPham sanPham)
-         {
-             if (id != sanPham.Id)
-             {
-                 return BadRequest();
-             }
+        public async Task<IActionResult> PutSanPham(int id, SanPham sanPham)
+        {
+            if (id != sanPham.Id)
+            {
+                return BadRequest();
+            }
+            var result = await _productService.PutProduct(id, sanPham);
+            if(ReferenceEquals(result, false))
+            {
+                return BadRequest("Sửa không thành công");
+            }
+            return Ok("Sửa thành công");
+        }
 
-             _context.Entry(sanPham).State = EntityState.Modified;
-
-             try
-             {
-                 await _context.SaveChangesAsync();
-             }
-             catch (DbUpdateConcurrencyException)
-             {
-                 if (!SanPhamExists(id))
-                 {
-                     return NotFound();
-                 }
-                 else
-                 {
-                     throw;
-                 }
-             }
-
-             return NoContent();
-         }
- */
         // POST: api/Product
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<SanPham>> PostSanPham(SanPham sanPham)
+        public async Task<ActionResult<SanPhamDto>> PostSanPham(SanPham sanPham)
         {
-            var product = _productService.PostProduct(sanPham);
-            return Ok(product);
-          //  return product;
+            var product = await _productService.PostProduct(sanPham);
+            if (sanPham == null)
+            {
+                return NotFound();
+            }
+
+            return new SanPhamDto
+            {
+                Id = product.Id,
+                TenSanPham = product.TenSanPham,
+                MoTa = product.MoTa,
+                Anh = product.Anh,
+                CreatedbyId = product.CreatedbyId,
+                Gia = product.Gia,
+                Sale = product.Sale,
+                Loai = product.Loai,
+                NgayTao = product.NgayTao
+            };
         }
 
         // DELETE: api/Product/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSanPham(int id)
         {
-            Boolean sanPham =  _productService.DeleteProduct(id);
-            if (sanPham == null)
+            var sanPham =  _productService.DeleteProduct(id);
+            if (sanPham == false)
             {
-                return NotFound();
+                return BadRequest("Xóa không thành công");
             }
-
             return NoContent();
         }
 

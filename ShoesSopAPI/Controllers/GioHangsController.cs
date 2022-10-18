@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
 using ShoesSopAPI.Data;
+using ShoesSopAPI.DTO;
 using ShoesSopAPI.Models;
 using ShoesSopAPI.Services.Interfaces;
 
@@ -26,16 +20,48 @@ namespace ShoesSopAPI.Controllers
 
         // GET: api/GioHangs
         [HttpGet]
-        public async Task<IEnumerable<GioHang>> GetGioHangs()
+        public async Task<ActionResult<IEnumerable<GioHangDto>>> GetGioHangs()
         {
-            return await _gioHangsService.GetListAllGioHang();
+            var list =  await _gioHangsService.GetListAllGioHang();
+            if(list == null)
+            {
+                return NoContent();
+            }
+            else
+            {
+                var listGioHangDto =  list.Select(n => new GioHangDto
+                {
+                    Id = n.Id,
+                    SanPhamId = n.SanPhamId,
+                    KhachHangId = n.KhachHangId
+                });
+                return Ok(listGioHangDto);
+            }
         }
 
         // GET: api/GioHangs/id khach hang 
         [HttpGet("{id}")]
-        public async Task<IEnumerable<SanPham>> GetGioHang(string id)
+        public async Task<ActionResult<IEnumerable<SanPhamDto>>> GetGioHang(string id)
         {
-            return await _gioHangsService.GetListByCustomerId(id);
+            var listProduct =  await _gioHangsService.GetListByCustomerId(id);
+            if (listProduct == null)
+                return NoContent();
+            else
+            {
+                var listProductDto = listProduct.Select(n => new SanPhamDto
+                {
+                    Id = n.Id,
+                    TenSanPham = n.TenSanPham,
+                    MoTa = n.MoTa,
+                    Anh = n.Anh,
+                    CreatedbyId = n.CreatedbyId,
+                    Gia = n.Gia,
+                    Sale = n.Sale,
+                    Loai = n.Loai,
+                    NgayTao = n.NgayTao
+                });
+                return Ok(listProductDto);
+            }
         }
 
         /*[Authorize]
@@ -73,9 +99,12 @@ namespace ShoesSopAPI.Controllers
         public async Task<ActionResult> PostGioHang(int sanPhamId, int khachHangId)
         {
            var result = await _gioHangsService.PostProductToGioHang(sanPhamId, khachHangId);
-            if (result != null)
-                return NoContent();
-            return NotFound();
+            if (result == null)
+                return BadRequest("Them san pham khong thanh cong");
+            else
+            {
+                return Ok();
+            }
         }
 
         // DELETE: api/GioHangs/ id san pham 
@@ -84,10 +113,11 @@ namespace ShoesSopAPI.Controllers
         {
             GioHang result = await _gioHangsService.DeleteGioHang(id);
             if (result == null)
+                return BadRequest("Xoa san pham khong thanh cong");
+            else
             {
-                return NotFound();
+                return Ok();
             }
-            return NoContent();
         }
 
     }

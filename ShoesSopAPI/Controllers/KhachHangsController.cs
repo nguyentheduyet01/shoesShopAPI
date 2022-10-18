@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShoesSopAPI.Data;
+using ShoesSopAPI.DTO;
 using ShoesSopAPI.Models;
 
 namespace ShoesSopAPI.Controllers
@@ -18,9 +19,27 @@ namespace ShoesSopAPI.Controllers
 
         // GET: api/KhachHangs
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<KhachHang>>> GetKhachHangs()
+        public async Task<ActionResult<IEnumerable<KhachHangDto>>> GetKhachHangs()
         {
-            return await _context.KhachHangs.ToListAsync();
+            var listKhachHang = await _context.KhachHangs.ToListAsync();
+            if(listKhachHang == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                var listKhachHangDto = listKhachHang.Select(n => new KhachHangDto
+                {
+                    Id = n.Id,
+                    HoTen = n.HoTen,
+                    Email = n.Email,
+                    GioiTinh = n.GioiTinh,
+                    MatKhau = n.MatKhau,
+                    Ngaysinh = n.Ngaysinh,
+                    Sđt = n.Sđt
+                });
+                return Ok(listKhachHangDto);
+            }
         }
 
         // GET: api/KhachHangs/5
@@ -33,8 +52,20 @@ namespace ShoesSopAPI.Controllers
             {
                 return NotFound();
             }
-
-            return khachHang;
+            else
+            {
+                KhachHangDto khachHangDto = new KhachHangDto
+                {
+                    Id = khachHang.Id,
+                    HoTen = khachHang.HoTen,
+                    Email = khachHang.Email,
+                    GioiTinh = khachHang.GioiTinh,
+                    MatKhau = khachHang.MatKhau,
+                    Ngaysinh = khachHang.Ngaysinh,
+                    Sđt = khachHang.Sđt
+                };
+                return Ok(khachHangDto);
+            }
         }
 
         // PUT: api/KhachHangs/5
@@ -65,7 +96,7 @@ namespace ShoesSopAPI.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok("Sửa thành công");
         }
 
         // POST: api/KhachHangs
@@ -73,10 +104,18 @@ namespace ShoesSopAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<KhachHang>> PostKhachHang(KhachHang khachHang)
         {
-            _context.KhachHangs.Add(khachHang);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.KhachHangs.Add(khachHang);
+                await _context.SaveChangesAsync();
+                return CreatedAtAction("GetKhachHang", new { id = khachHang.Id }, khachHang);
+            }
+            catch
+            {
+                return BadRequest("Thêm khách hàng không thành công");
+            }
 
-            return CreatedAtAction("GetKhachHang", new { id = khachHang.Id }, khachHang);
+            
         }
 
         // DELETE: api/KhachHangs/5
