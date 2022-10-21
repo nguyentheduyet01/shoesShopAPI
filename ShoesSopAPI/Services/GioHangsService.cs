@@ -32,11 +32,20 @@ namespace ShoesSopAPI.Services
            return await _gioHangRepo.PostProductToGioHang(sanPhamId, khachHangId);
         }
 
-        public async Task<GioHang> DeleteGioHang(int id)
+        public async Task<GioHang> DeleteGioHang(int id, int userId)
         {
-            GioHang gioHang = await _gioHangRepo.DeleteGioHang(id);
+            GioHang gioHang = await _gioHangRepo.DeleteGioHang(id, userId);
             return  gioHang;
         }
 
+        public Task<GioHang> EditGioHang(int id, GioHang gioHang)
+        {
+            return _gioHangRepo.EditGioHang(id, gioHang);
+        }
+
+        public bool PostListProducToGioHang(List<int> sanPhamId, int userId)
+        {
+            return _gioHangRepo.PostListProducToGioHang(sanPhamId,userId);
+        }
     }
 }

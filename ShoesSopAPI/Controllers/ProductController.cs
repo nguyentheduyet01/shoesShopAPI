@@ -19,9 +19,9 @@ namespace ShoesSopAPI.Controllers
 
         // GET: api/Product
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<SanPhamDto>>> GetSanPham()
+        public async Task<ActionResult<IEnumerable<SanPhamDto>>> GetSanPham(string? search, double? from, double? to, string? sortBy, int page = 1)
         {
-            var listProduct =  await _productService.GetListProductBySale();
+            var listProduct =  await _productService.GetAllProduct(search,from, to, sortBy, page);
             if(listProduct == null)
             {
                 return BadRequest();
@@ -46,7 +46,7 @@ namespace ShoesSopAPI.Controllers
 
         // GET: api/Product/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<SanPhamDto>> GetSanPham(int id)
+        public async Task<ActionResult<SanPham>> GetSanPham(int id)
         {
             var sanPham = await _productService.GetProductById(id);
 
@@ -55,18 +55,7 @@ namespace ShoesSopAPI.Controllers
                 return NotFound();
             }
 
-            return new SanPhamDto
-            {
-                Id = sanPham.Id,
-                TenSanPham = sanPham.TenSanPham,
-                MoTa = sanPham.MoTa,
-                Anh = sanPham.Anh,
-                CreatedbyId = sanPham.CreatedbyId,
-                Gia = sanPham.Gia,
-                Sale = sanPham.Sale,
-                Loai = sanPham.Loai,
-                NgayTao = sanPham.NgayTao
-            };
+            return sanPham;
         }
         // danh sach san pham theo loai
         [Route("loai")]
@@ -92,31 +81,7 @@ namespace ShoesSopAPI.Controllers
             });
             return Ok(listProductDto);
         }
-        // danh sach san pham moi 
-        [Route("new")]
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<SanPham>>> GetListSanPhamMoi()
-        {
-            var list = await _productService.GetListProductByNgayTao();
-            if(list == null)
-            {
-                return NotFound();
-            }
-            var listProductDto = list.Select(n => new SanPhamDto
-            {
-                Id = n.Id,
-                TenSanPham = n.TenSanPham,
-                MoTa = n.MoTa,
-                Anh = n.Anh,
-                CreatedbyId = n.CreatedbyId,
-                Gia = n.Gia,
-                Sale = n.Sale,
-                Loai = n.Loai,
-                NgayTao = n.NgayTao
-            });
-            return Ok(listProductDto);
-        }
-
+       
         [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutSanPham(int id, SanPham sanPham)
@@ -134,7 +99,6 @@ namespace ShoesSopAPI.Controllers
         }
 
         // POST: api/Product
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<SanPhamDto>> PostSanPham(SanPham sanPham)
         {

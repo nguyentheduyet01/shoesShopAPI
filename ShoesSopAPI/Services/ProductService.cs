@@ -21,14 +21,9 @@ namespace ShoesSopAPI.Services
             return  _productRepo.DeleteProduct(id);
         }
 
-        public async Task<IEnumerable<SanPham>> GetListProductByNgayTao()
+        public Task<IEnumerable<SanPham>> GetAllProduct(string? search, double? from, double? to, string? sortBy, int page = 1)
         {
-            return await _productRepo.GetListProductByNgayTao();
-        }
-
-        public async Task<IEnumerable<SanPham>> GetListProductBySale()
-        {
-            return await _productRepo.GetListProductBySale();
+            return _productRepo.GetAllProduct(search, from, to, sortBy, page);
         }
 
         public async Task<IEnumerable<SanPham>> GetListProductByType(int type)

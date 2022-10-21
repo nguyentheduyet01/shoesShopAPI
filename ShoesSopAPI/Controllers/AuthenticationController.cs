@@ -17,6 +17,10 @@ namespace ShoesSopAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Account>> Login(string username, string password)
         {
+            if(username == null || password == null)
+            {
+                return BadRequest("The username or password field is required.");
+            }
             var account = await _authenticationService.Login(username, password);
 
             if (account == null)
